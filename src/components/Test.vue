@@ -4,13 +4,12 @@
       <p>Welcome to your Vue.js app!</p>
       <button class="primary" @click="checkSignin">check sign in</button>
       <button class="primary" @click="signOut">sign out</button>
-      <input v-model="text">
       <dropzone
         id="myVueDropzone"
         url="https://httpbin.org/post"
         v-on:vdropzone-success="showSuccess"
       >
-          <input type="hidden" name="token" value="xxx">
+        <input type="hidden" name="token" value="xxx">
       </dropzone>
       <!-- <dropzone
         id="uploadImage"
