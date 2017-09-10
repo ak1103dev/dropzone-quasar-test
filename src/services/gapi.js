@@ -1,10 +1,16 @@
 const CLIENT_ID = '904089928675-bhn16r2l298guobqrveh4qp6ps6di74p.apps.googleusercontent.com'
 const API_KEY = 'AIzaSyAR52n9dgkDg2P99oWQfq7S8oCarFYy8Vs'
 const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
-const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly'
+const SCOPES = 'https://www.googleapis.com/auth/drive'
 
 const handleAuthClick = (event) => {
   gapi.auth2.getAuthInstance().signIn()
+    .then((res) => {
+      console.log('res', res)
+      const token = res.Zi.access_token
+      console.log('token', token)
+      localStorage.setItem('googleToken', token)
+    })
 }
 
 const handleSignoutClick = (event) => {
