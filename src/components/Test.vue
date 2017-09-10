@@ -39,19 +39,55 @@ export default {
     handleClientLoad()
   },
   methods: {
-    addFile (file) {
-      console.log('add file', file)
-      const url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=media'
-      this.$http.post(url, file, {
+    createPermission (fileId) {
+      const url = `https://www.googleapis.com/drive/v3/files/${fileId}/permissions`
+      return this.$http.post(url, {
+        role: 'reader',
+        type: 'anyone'
+      }, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('googleToken')}`,
-          'Content-Type': file.type
+          Authorization: `Bearer ${localStorage.getItem('googleToken')}`
         }
       }).then(res => {
         console.log(res, res.body)
+        return true
       }, res => {
-        console.error(res)
+        // console.error(res)
+        return Promise.reject(res)
       })
+    },
+    addFile (file) {
+      const isSignedIn = gapi.auth2.getAuthInstance().isSignedIn.get()
+      console.log('is sign in', isSignedIn)
+      Promise.resolve({})
+      .then(() => {
+        if (!isSignedIn) {
+          return handleAuthClick()
+        }
+        return true
+      })
+      .then(() => {
+        console.log('add file', file)
+        const url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=media'
+        return this.$http.post(url, file, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('googleToken')}`,
+            'Content-Type': file.type
+          }
+        }).then(res => {
+          console.log(res, res.body)
+          const fileId = res.body.id
+          return this.createPermission(fileId).then(() => fileId)
+        }, res => {
+          // console.error(res)
+          return Promise.reject(res)
+        })
+      })
+      .then((fileId) => {
+        console.log('image url', `https://drive.google.com/uc?id=${fileId}`)
+        return true
+      })
+      .catch((error) => console.log({ error }))
     },
     checkSignin () {
       const isSignedIn = gapi.auth2.getAuthInstance().isSignedIn.get()
